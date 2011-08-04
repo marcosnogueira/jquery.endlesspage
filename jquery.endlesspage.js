@@ -3,8 +3,8 @@
 *
 * Copyright (c) 2011 Dito Internet
 * Authors: Marcos Nogueira (marcosnogueira@live.com) and Sergio Henrique (sergiohenriquetp@gmail.com)
-* Description: A jQuery plugin that do pagination like facebook.
-* 	When the scroll hit the bottom of the page, a ajax function will be called.
+* Description: A jQuery plugin that does pagination like facebook.
+* 	When the scroll hits the bottom of the page, an ajax function will be called.
 * 	A HTTP Header Response is checked to verify if we're done with the pagination (last page)
 *
 * Dual licensed under the MIT and GPL licenses:
