@@ -38,7 +38,7 @@
 				lastPage: false,
 				start: function(){
 					
-					$(window).scroll(function(){
+				  $(window).scroll(function(){
 						if(!endlessPage.isLoading && endlessPage.lastScrollValue < $(document).scrollTop() && !endlessPage.lastPage){
 							if(self[0] == document){
 								var height = Math.max(document.body.scrollHeight, document.body.offsetHeight);
