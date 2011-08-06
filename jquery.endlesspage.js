@@ -1,5 +1,5 @@
-/**
-* jQuery Endless Page plugin
+/*
+* jQuery Endless Page plugin 0.0.1
 *
 * Copyright (c) 2011 Dito Internet
 * Authors: Marcos Nogueira (marcosnogueira@live.com) and Sergio Henrique (sergiohenriquetp@gmail.com)
@@ -15,80 +15,116 @@
 
 (function( $ ){
   $.fn.endlessPage = function(options) {
-		var settings = {
-			distance: 150,
-			current_page: 1,
-			start_page: 1,
-			url: '',
-			beforeSend: function(){},
-			error: function(){},
-			complete: function(){},
-			success: function(){}
-		}
-		
-		return this.each(function() {        
-      if ( options ) { 
-        $.extend( settings, options );
-      }
-			var self = $(this);
-			
-			var endlessPage = {
-				isLoading: false,
-				lastScrollValue: window.pageYOffset,
-				lastPage: false,
-				start: function(){
-					
-				  $(window).scroll(function(){
-						if(!endlessPage.isLoading && endlessPage.lastScrollValue < $(document).scrollTop() && !endlessPage.lastPage){
-							if(self[0] == document){
-								var height = Math.max(document.body.scrollHeight, document.body.offsetHeight);
-							}
-							else {
-								var height = self.offset().top + self.height();
-							}
-							var distance_from_bottom = height - ($(document).scrollTop() + (window.innerHeight || document.documentElement.clientHeight));
-							
-							if(distance_from_bottom <= settings.distance){
-								endlessPage.makeRequest();
-							}
-						}
-						endlessPage.lastScrollValue = $(document).scrollTop();
-		
-					});
-				},
-				makeRequest: function(){
-					settings.current_page++;
-					$.ajax({
-						url: settings.url,
-						data: 'page='+ settings.current_page,
-						beforeSend: function( jqXHR, before_send_settings ) {
-							endlessPage.isLoading = true;
-							settings.beforeSend.call(this, jqXHR, before_send_settings);
-						}, //beforeSend
-						error: function( jqXHR, textStatus, errorThrown ){
-							settings.current_page--;
-							settings.error.call(this, jqXHR, textStatus, errorThrown);
-						}, //error
-						success: function( data, textStatus, jqXHR ) {
-							settings.success.call(this, data, textStatus, jqXHR );
-						}, //success
-						complete: function( jqXHR, textStatus ){
-							endlessPage.isLoading = false;
-							
-							if(jqXHR.getResponseHeader('X-Last-page') && jqXHR.getResponseHeader('X-Last-page') == 'true'){
-								endlessPage.lastPage = true;
-							}
-							
-							settings.complete.call(this, jqXHR, textStatus);
-						} //complete
-					});
-				}
-			}; //endlessPage
-			
-			endlessPage.start();
-			
+		return this.each(function() {
+      var _endlessPageElement = new $.fn.endlessPage.plugin(this, options);
+      _endlessPageElement.start(_endlessPageElement);
     });
-		
-
   };
+  
+  $.fn.endlessPage.plugin = function(element, options){
+    var settings = {
+  		distance: 150,
+  		per_page: 10,
+  		format: 'js',
+		  loadingTag: 'li',
+		  loadingHTML: 'Carregando, aguarde...',
+		  loadingClass: 'loading',
+		  errorTag: 'li',
+		  errorHTML: 'Ocorreu um erro ao carregar os itens',
+		  errorClass: 'error',
+		  endTag: 'li',
+		  endHTML: 'Não existe mais itens a serem carregados',
+		  endClass: 'end',
+  		dataType: 'html',
+  		lastPageHeader: 'X-Last-page',
+  		lastPageHeaderValue: 'true',
+  		current_page: 1,
+  		start_page: 1,
+  		source: document.location.href,
+  		beforeSend: function(){},
+  		error: function(){},
+  		complete: function(){},
+  		success: function(){}
+  	};
+  	
+  	if(options) { 
+      $.extend( settings, options );
+    }
+    
+  	var $this = $(element);
+			
+		this.isLoading = false;
+		this.lastScrollValue = window.pageYOffset;
+		this.lastPage = false;
+		
+		this.makeRequest = function(){
+		  var self = this;
+		  
+			settings.current_page++;
+			$.ajax({
+				url: settings.source,
+				dataType: settings.dataType,
+				data: 'format='+ settings.format +'&per_page='+ settings.per_page +'&page='+ settings.current_page,
+				beforeSend: function( jqXHR, before_send_settings ) {
+					self.isLoading = true;
+					
+					$(settings.appendTo).append('<'+ settings.loadingTag +' class="'+ settings.loadingClass +'">'+ settings.loadingHTML +'</'+ settings.loadingTag +'>');
+					
+					settings.beforeSend.call(this, jqXHR, before_send_settings);
+				}, //beforeSend
+				error: function( jqXHR, textStatus, errorThrown ){
+				  settings.current_page--;
+				  
+				  $(settings.appendTo).append('<'+ settings.errorTag +' class="'+ settings.errorClass +'">'+ settings.errorHTML +'</'+ settings.errorTag +'>');
+				  
+					settings.error.call(this, jqXHR, textStatus, errorThrown);
+				}, //error
+				success: function( data, textStatus, jqXHR ) {
+				  if(settings.appendTo){
+				    $(settings.appendTo).append(data);
+				  }
+					settings.success.call(this, data, textStatus, jqXHR );
+				}, //success
+				complete: function( jqXHR, textStatus ){
+					self.isLoading = false;
+					
+					$(settings.appendTo).find('.'+ settings.loadingClass).remove();
+					
+					if(self._isLastPage(jqXHR)){
+						self.lastPage = true;
+						
+						$(settings.appendTo).append('<'+ settings.endTag +' class="'+ settings.endClass +'">'+ settings.endHTML +'</'+ settings.endTag +'>');
+					}
+					
+					settings.complete.call(this, jqXHR, textStatus);
+				} //complete
+			});
+		}; //makeRequest
+		
+		this._isLastPage = function(xhr){
+		  return xhr.getResponseHeader(settings.lastPageHeader) && xhr.getResponseHeader(settings.lastPageHeader) == settings.lastPageHeaderValue;
+		}; //_isLastPage?
+		
+		this.start = function(){
+		  var self = this;
+		  $(window).scroll(function(){
+				if(!self.isLoading && self.lastScrollValue < $(document).scrollTop() && !self.lastPage){
+					if($this[0] == document){
+						var height = Math.max(document.body.scrollHeight, document.body.offsetHeight);
+					}
+					else {
+						var height = $this.offset().top + $this.height();
+					}
+					var distance_from_bottom = height - ($(document).scrollTop() + (window.innerHeight || document.documentElement.clientHeight));
+					
+					if(distance_from_bottom <= settings.distance){
+					  self.makeRequest();
+					}
+				}
+				self.lastScrollValue = $(document).scrollTop();
+
+			});
+		}; //start
+	}; //endlessPage
+
 })( jQuery );
