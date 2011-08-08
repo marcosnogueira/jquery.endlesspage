@@ -16,34 +16,35 @@
 (function( $ ){
   $.fn.endlessPage = function(options) {
 		return this.each(function() {
-      var _endlessPageElement = new $.fn.endlessPage.plugin(this, options);
-      _endlessPageElement.start(_endlessPageElement);
+      var _target = new $.fn.endlessPage.plugin(this, options);
+      _target.start();
     });
   };
   
   $.fn.endlessPage.plugin = function(element, options){
     var settings = {
+  		current_page: 1,
+  		dataType: 'html',
   		distance: 150,
-  		per_page: 10,
+		  endTag: 'li',
+		  endHTML: 'Não existe mais itens a serem carregados',
+		  endClass: 'end',
+		  errorTag: 'li',
+		  errorHTML: 'Ocorreu um erro ao carregar os itens',
+		  errorClass: 'error',
   		format: 'js',
 		  loadingTag: 'li',
 		  loadingHTML: 'Carregando, aguarde...',
 		  loadingClass: 'loading',
-		  errorTag: 'li',
-		  errorHTML: 'Ocorreu um erro ao carregar os itens',
-		  errorClass: 'error',
-		  endTag: 'li',
-		  endHTML: 'Não existe mais itens a serem carregados',
-		  endClass: 'end',
-  		dataType: 'html',
   		lastPageHeader: 'X-Last-page',
   		lastPageHeaderValue: 'true',
-  		current_page: 1,
+  		per_page: 10,
   		start_page: 1,
   		source: document.location.href,
+  		useWindowScroll: true,
   		beforeSend: function(){},
-  		error: function(){},
   		complete: function(){},
+  		error: function(){},
   		success: function(){}
   	};
   	
@@ -54,7 +55,9 @@
   	var $this = $(element);
 			
 		this.isLoading = false;
+		
 		this.lastScrollValue = window.pageYOffset;
+		
 		this.lastPage = false;
 		
 		this.makeRequest = function(){
@@ -102,27 +105,42 @@
 		}; //makeRequest
 		
 		this._isLastPage = function(xhr){
-		  return xhr.getResponseHeader(settings.lastPageHeader) && xhr.getResponseHeader(settings.lastPageHeader) == settings.lastPageHeaderValue;
+		  return (xhr && xhr.getResponseHeader(settings.lastPageHeader) && xhr.getResponseHeader(settings.lastPageHeader) == settings.lastPageHeaderValue) || this.lastPage;
 		}; //_isLastPage?
+		
+		this._freeToGo = function(){
+		  return !this.isLoading && this._scrollToDown() && !this._isLastPage();
+		}; //_freeToGo
+		
+		this._scrollToDown = function(){
+		  return this.lastScrollValue < this._attachScrollTo().scrollTop();
+		}; //_scrollToDown
+		
+		this._attachScrollTo = function(){
+		  return settings.useWindowScroll ? $(window) : $this;
+		}
+		
+		this._distanceFromBottom = function(){
+		  if($this[0] == document){
+				var height = Math.max(document.body.scrollHeight, document.body.offsetHeight);
+			}
+			else {
+				var height = $this.offset().top + $this.height();
+			}
+			
+			return height - ($(document).scrollTop() + (window.innerHeight || document.documentElement.clientHeight));
+		}; //_distanceFromBottom
 		
 		this.start = function(){
 		  var self = this;
-		  $(window).scroll(function(){
-				if(!self.isLoading && self.lastScrollValue < $(document).scrollTop() && !self.lastPage){
-					if($this[0] == document){
-						var height = Math.max(document.body.scrollHeight, document.body.offsetHeight);
-					}
-					else {
-						var height = $this.offset().top + $this.height();
-					}
-					var distance_from_bottom = height - ($(document).scrollTop() + (window.innerHeight || document.documentElement.clientHeight));
-					
-					if(distance_from_bottom <= settings.distance){
+
+		  self._attachScrollTo().scroll(function(){
+		    if(self._freeToGo()){
+					if(self._distanceFromBottom() <= settings.distance){
 					  self.makeRequest();
 					}
 				}
 				self.lastScrollValue = $(document).scrollTop();
-
 			});
 		}; //start
 	}; //endlessPage
