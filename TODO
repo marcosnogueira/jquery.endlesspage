@@ -1,2 +1,2 @@
 * Array pagination
-* Automatic append
+* Just call a callback function, instead of ajax
