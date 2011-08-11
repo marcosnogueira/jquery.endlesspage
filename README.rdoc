@@ -1,5 +1,6 @@
-h1. jQuery.endlessPage
+= jQuery.endlessPage
 
 A jQuery plugin that does pagination like facebook.
 When the scroll hits the bottom of the page, an ajax function will be called.
 A HTTP Header Response is checked to verify if we're done with the pagination (last page)
+
