@@ -24,43 +24,43 @@
     });
   };
   
+  $.fn.endlessPage.defaults = {
+    appendTo: true,
+		currentPage: 1,
+		distance: 150,
+		end: {
+		  tag: 'li',
+		  HTML: 'Não existe mais itens a serem carregados',
+		  klass: 'end'
+		},
+	  error: {
+	    tag: 'li',
+	    HTML: 'Ocorreu um erro ao carregar os itens',
+	    klass: 'error'
+		},
+		format: 'js',
+	  loading: {
+	    tag: 'li',
+	    HTML: 'Carregando, aguarde...',
+	    klass: 'loading'
+	  },
+		lastPageHeader: 'X-Last-page',
+		lastPageHeaderValue: 'true',
+		perPage: 10,
+		startPage: 1,
+		source: document.location.href,
+		useElementScroll: false,
+		ajax: {
+		  dataType: 'html',
+		  beforeSend: function(){},
+  		complete: function(){},
+  		error: function(){},
+  		success: function(){}
+		}
+	};
+  
   $.fn.endlessPage.plugin = function(element, options){
-    var settings = {
-      appendTo: true,
-  		currentPage: 1,
-  		distance: 150,
-  		end: {
-  		  tag: 'li',
-  		  HTML: 'Não existe mais itens a serem carregados',
-  		  klass: 'end'
-  		},
-		  error: {
-		    tag: 'li',
-		    HTML: 'Ocorreu um erro ao carregar os itens',
-		    klass: 'error'
-  		},
-  		format: 'js',
-		  loading: {
-		    tag: 'li',
-		    HTML: 'Carregando, aguarde...',
-		    klass: 'loading'
-		  },
-  		lastPageHeader: 'X-Last-page',
-  		lastPageHeaderValue: 'true',
-  		perPage: 10,
-  		startPage: 1,
-  		source: document.location.href,
-  		useElementScroll: false,
-  		ajax: {
-  		  dataType: 'html',
-  		  beforeSend: function(){},
-    		complete: function(){},
-    		error: function(){},
-    		success: function(){}
-  		}
-  	};
-  	
-    $.extend( true, settings, options );
+    var settings = $.extend( true, $.fn.endlessPage.defaults, options );
     
   	var $this = $(element);
 			
