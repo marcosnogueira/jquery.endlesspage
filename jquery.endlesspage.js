@@ -46,6 +46,7 @@
 	  },
 		lastPageHeader: 'X-Last-page',
 		lastPageHeaderValue: 'true',
+		pageParam: 'page',
 		perPage: 10,
 		startPage: 1,
 		source: document.location.href,
@@ -58,9 +59,11 @@
   		success: function(){}
 		}
 	};
+	
+	$.fn.endlessPage.settings = {};
   
   $.fn.endlessPage.plugin = function(element, options){
-    var settings = $.extend( true, $.fn.endlessPage.defaults, options );
+    $.fn.endlessPage.settings = $.extend( true, $.fn.endlessPage.defaults, options );
     
   	var $this = $(element);
 			
@@ -72,13 +75,13 @@
 		
 		this.appendTo = function(){
 		  if(this.appendTo){
-		    var element = settings.appendTo === true ? $this : $(settings.appendTo);
+		    var element = $.fn.endlessPage.settings.appendTo === true ? $this : $($.fn.endlessPage.settings.appendTo);
 	    }
 		  return element;
 		}; //appendTo
 		
 		this._isLastPage = function(xhr){
-		  return (xhr && xhr.getResponseHeader(settings.lastPageHeader) && xhr.getResponseHeader(settings.lastPageHeader) == settings.lastPageHeaderValue) || this.lastPage;
+		  return (xhr && xhr.getResponseHeader($.fn.endlessPage.settings.lastPageHeader) && xhr.getResponseHeader($.fn.endlessPage.settings.lastPageHeader) == $.fn.endlessPage.settings.lastPageHeaderValue) || this.lastPage;
 		}; //_isLastPage?
 		
 		this._freeToGo = function(){
@@ -90,7 +93,7 @@
 		}; //_scrollToDown
 		
 		this._attachScrollTo = function(){
-		  return settings.useElementScroll ? $this : $(window);
+		  return $.fn.endlessPage.settings.useElementScroll ? $this : $(window);
 		}
 		
 		this._distanceFromBottom = function(){
@@ -100,7 +103,7 @@
 				distance = Math.max(document.body.scrollHeight, document.body.offsetHeight) - ($(window).scrollTop() + (window.innerHeight || document.documentElement.clientHeight));
 			}
 			else {
-				if(settings.useElementScroll){
+				if($.fn.endlessPage.settings.useElementScroll){
 				  distance = Math.max($this[0].scrollHeight, $this[0].offsetHeight) - ($this.scrollTop() + $this.height());
 				}
 				else {
@@ -116,7 +119,7 @@
 
 		  self._attachScrollTo().scroll(function(){
 		    if(self._freeToGo()){
-					if(self._distanceFromBottom() <= settings.distance){
+					if(self._distanceFromBottom() <= $.fn.endlessPage.settings.distance){
 					  self.makeRequest();
 					}
 				}
@@ -127,51 +130,51 @@
 		this.makeRequest = function(){
 		  var self = this;
 		  
-			settings.currentPage++;
+			$.fn.endlessPage.settings.currentPage++;
 			
-			var params = $.extend(true, {}, settings.ajax);
+			var params = $.extend(true, {}, $.fn.endlessPage.settings.ajax);
 			
-			params.url = settings.source;
-			params.data = 'format='+ settings.format +'&per_page='+ settings.perPage +'&page='+ settings.currentPage;
+			params.url = $.fn.endlessPage.settings.source;
+			params.data = 'format='+ $.fn.endlessPage.settings.format +'&per_page='+ $.fn.endlessPage.settings.perPage +'&'+ $.fn.endlessPage.settings.pageParam +'='+ $.fn.endlessPage.settings.currentPage;
 			params.beforeSend = function( jqXHR, before_send_settings ) {
 				self.isLoading = true;
 				
-				if(settings.appendTo){
-				  self.appendTo().append('<'+ settings.loading.tag +' class="'+ settings.loading.klass +'">'+ settings.loading.HTML +'</'+ settings.loading.tag +'>');
+				if($.fn.endlessPage.settings.appendTo){
+				  self.appendTo().append('<'+ $.fn.endlessPage.settings.loading.tag +' class="'+ $.fn.endlessPage.settings.loading.klass +'">'+ $.fn.endlessPage.settings.loading.HTML +'</'+ $.fn.endlessPage.settings.loading.tag +'>');
 			  }
 			  
-				settings.ajax.beforeSend.call(this, jqXHR, before_send_settings);
+				$.fn.endlessPage.settings.ajax.beforeSend.call(this, jqXHR, before_send_settings);
 			}; //beforeSend
 			params.error = function( jqXHR, textStatus, errorThrown ){
-			  settings.currentPage--;
+			  $.fn.endlessPage.settings.currentPage--;
 			  
-			  if(settings.appendTo){
-			    self.appendTo().append('<'+ settings.error.tag +' class="'+ settings.error.klass +'">'+ settings.error.HTML +'</'+ settings.error.tag +'>');
+			  if($.fn.endlessPage.settings.appendTo){
+			    self.appendTo().append('<'+ $.fn.endlessPage.settings.error.tag +' class="'+ $.fn.endlessPage.settings.error.klass +'">'+ $.fn.endlessPage.settings.error.HTML +'</'+ $.fn.endlessPage.settings.error.tag +'>');
 		    }
-				settings.ajax.error.call(this, jqXHR, textStatus, errorThrown);
+				$.fn.endlessPage.settings.ajax.error.call(this, jqXHR, textStatus, errorThrown);
 			}; //error
 			params.success = function( data, textStatus, jqXHR ) {
-			  if(settings.appendTo){
+			  if($.fn.endlessPage.settings.appendTo){
 			    self.appendTo().append(data);
 			  }
-				settings.ajax.success.call(this, data, textStatus, jqXHR );
+				$.fn.endlessPage.settings.ajax.success.call(this, data, textStatus, jqXHR );
 			}; //success
 			params.complete = function( jqXHR, textStatus ){
 				self.isLoading = false;
 				
-				if(settings.appendTo){
-				  self.appendTo().find('.'+ settings.loading.klass).remove();
+				if($.fn.endlessPage.settings.appendTo){
+				  self.appendTo().find('.'+ $.fn.endlessPage.settings.loading.klass).remove();
 			  }
 			  
 				if(self._isLastPage(jqXHR)){
 					self.lastPage = true;
 					
-					if(settings.appendTo){
-					  self.appendTo().append('<'+ settings.end.tag +' class="'+ settings.end.klass +'">'+ settings.end.HTML +'</'+ settings.end.tag +'>');
+					if($.fn.endlessPage.settings.appendTo){
+					  self.appendTo().append('<'+ $.fn.endlessPage.settings.end.tag +' class="'+ $.fn.endlessPage.settings.end.klass +'">'+ $.fn.endlessPage.settings.end.HTML +'</'+ $.fn.endlessPage.settings.end.tag +'>');
 				  }
 				}
 				
-				settings.ajax.complete.call(this, jqXHR, textStatus);
+				$.fn.endlessPage.settings.ajax.complete.call(this, jqXHR, textStatus);
 			}; //complete
 			
 			$.ajax(params);
