@@ -5,3 +5,5 @@ When the scroll hits the bottom of the page, an ajax function will be called.
 A HTTP Header Response is checked to verify if we're done with the pagination (last page)
 
 == Options
+
+[appendTo(boolean / string)] the element(jQuery selector) that the response will be appended to. If the true boolean value is passed, then the response will be appended to the element that the plugin is attached
