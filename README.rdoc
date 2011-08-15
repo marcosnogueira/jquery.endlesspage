@@ -9,9 +9,9 @@ A HTTP Header Response is checked to verify if we're done with the pagination (l
 [appendTo(boolean / jQuery Selector) | <i>Default: true</i>]  The element(jQuery selector) that the response will be appended to. If the true boolean value is passed, then the response will be appended to the element that the plugin is attached.
 
 [distance(integer) | <i>Default: 150</i>]  The distance from the bottom of the page that the plugin is activated.
-[() | <i>Default: </i>] 
-[() | <i>Default: </i>] 
-[() | <i>Default: </i>] 
+[end(JSON Object) | <i>Default: { tag: 'li', HTML: 'There is no more items to load', klass: 'end' }</i>] A Json with 3 keys (tag, HTML, klass). This will be used to put a message at the bottom when the pagination is over.
+[error(JSON Object) | <i>Default: { tag: 'li', HTML: 'An error occurred loading the items. Try again.', klass: 'error' }</i>] A Json with 3 keys (tag, HTML, klass). This will be used to put a message at the bottom when the pagination somehow return an error.
+[loading(JSON Object) | <i>Default: { tag: 'li', HTML: 'Loading...', klass: 'loading' }</i>] A Json with 3 keys (tag, HTML, klass). This will be used to put a message at the bottom when the plugin is loading more items.
 [format(string) | <i>Default: 'js'</i>] The format that will sent to the server
 [lastPageHeader(string) | <i>Default: 'X-Last-page'</i>] The name of the header that the plugin uses to verify if the pagination is over(last page).
 [lastPageHeaderValue(string) | <i>Default: 'true'</i>] The value of the header that the option above uses.
@@ -19,4 +19,4 @@ A HTTP Header Response is checked to verify if we're done with the pagination (l
 [perPage(integer) | <i>Default: 10</i>] The number of items per page. This value will be passed to the server.
 [source(string) | <i>Default: document.location.href</i>] The url that the request will be sent.
 [useElementScroll(boolean) | <i>Default: false</i>] Indicates wich scroll will be used. For default the scroll used is the document scroll.
-[ajax(object) | <i>Default: an object with the ajax options</i>] An JSON object with all the possibles options that jQuery ajax needs.
+[ajax(JSON Object) | <i>Default: an object with the ajax options</i>] An JSON object with all the possibles options that jQuery ajax needs.
