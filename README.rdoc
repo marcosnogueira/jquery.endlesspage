@@ -6,6 +6,4 @@ A HTTP Header Response is checked to verify if we're done with the pagination (l
 
 == Options
 
-[appendTo(boolean / string) | <i>Default: true</i>]    the element(jQuery selector) that the response will be appended to.
-                              If the true boolean value is passed, then the response will be appended to the element
-                              that the plugin is attached
+[appendTo(boolean / string) | <i>Default: true</i>]    the element(jQuery selector) that the response will be appended to. If the true boolean value is passed, then the response will be appended to the element that the plugin is attached
