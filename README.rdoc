@@ -6,6 +6,17 @@ A HTTP Header Response is checked to verify if we're done with the pagination (l
 
 == Options
 
-[appendTo(boolean / jQuery Selector) | <i>Default: true</i>]    The element(jQuery selector) that the response will be appended to. If the true boolean value is passed, then the response will be appended to the element that the plugin is attached.
+[appendTo(boolean / jQuery Selector) | <i>Default: true</i>]  The element(jQuery selector) that the response will be appended to. If the true boolean value is passed, then the response will be appended to the element that the plugin is attached.
 
 [distance(integer) | <i>Default: 150</i>]  The distance from the bottom of the page that the plugin is activated.
+[() | <i>Default: </i>] 
+[() | <i>Default: </i>] 
+[() | <i>Default: </i>] 
+[format(string) | <i>Default: 'js'</i>] The format that will sent to the server
+[lastPageHeader(string) | <i>Default: 'X-Last-page'</i>] The name of the header that the plugin uses to verify if the pagination is over(last page).
+[lastPageHeaderValue(string) | <i>Default: 'true'</i>] The value of the header that the option above uses.
+[pageParam(string) | <i>Default: 'page'</i>] The name of the parameter in the url that indicates wich page is resquested.
+[perPage(integer) | <i>Default: 10</i>] The number of items per page. This value will be passed to the server.
+[source(string) | <i>Default: document.location.href</i>] The url that the request will be sent.
+[useElementScroll(boolean) | <i>Default: false</i>] Indicates wich scroll will be used. For default the scroll used is the document scroll.
+[ajax(object) | <i>Default: an object with the ajax options</i>] An JSON object with all the possibles options that jQuery ajax needs.
